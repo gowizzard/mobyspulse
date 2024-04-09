@@ -1,0 +1,8 @@
+# First we ignore all folders & files
+# After that we ignore the file types & more
+.github/
+
+.gitignore
+
+*.md
+**/*_test.go
