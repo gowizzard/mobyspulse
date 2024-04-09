@@ -1,13 +1,26 @@
 package handler
 
 import (
-	"github.com/gowizzard/mobyspulse/internal/metric"
+	"fmt"
 	request "github.com/gowizzard/mobyspulse/internal/requests"
 	"github.com/gowizzard/mobyspulse/internal/write"
 	"net/http"
 	"strconv"
 	"strings"
 )
+
+// Metric is to define the metric struct. It has the name, labels, and value fields.
+type Metric struct {
+	Name   string
+	Labels []Labels
+	Value  int
+}
+
+// Labels is to define the labels' struct. It has the key and value fields.
+type Labels struct {
+	Key   string
+	Value string
+}
 
 // Metrics is to return the metrics for prometheus to scrape. It gets the version information from the docker unix socket.
 // It writes a comment to the buffer to let the user know that the system is being monitored. It gets the container information
@@ -20,12 +33,12 @@ func Metrics(w http.ResponseWriter, _ *http.Request) {
 		write.Logger.Error("Get the version information from docker unix socket.", "err", err)
 	}
 
-	err = metric.Comment(w, "Moby's Pulse - Docker metrics exporter for Prometheus")
+	_, err = fmt.Fprintln(w, "# Moby's Pulse - Docker metrics exporter for Prometheus.")
 	if err != nil {
 		write.Logger.Error("Write the comment metric.", "err", err)
 	}
 
-	err = metric.Comment(w, "This is a custom exporter for Docker metrics. Your system running Docker version "+version.Version+" is being monitored.")
+	_, err = fmt.Fprintf(w, "# This is a custom exporter for Docker metrics. Your system running Docker version \"%s\" and API version \"%s\" is being monitored.\n", version.Version, version.ApiVersion)
 	if err != nil {
 		write.Logger.Error("Write the comment metric.", "err", err)
 	}
@@ -52,17 +65,55 @@ func Metrics(w http.ResponseWriter, _ *http.Request) {
 			tag = image.RepoTags[0]
 		}
 
-		err = metric.Counter(w, metric.Config{
+		metric := Metric{
 			Name: "container_restart_count",
-			Labels: map[string]string{
-				"id":         container.Id,
-				"name":       strings.Replace(container.Name, "/", "", 1),
-				"image":      tag,
-				"created":    strconv.FormatInt(container.Created.Unix(), 10),
-				"started_at": strconv.FormatInt(container.State.StartedAt.Unix(), 10),
+			Labels: []Labels{
+				{
+					Key:   "id",
+					Value: container.Id,
+				},
+				{
+					Key:   "name",
+					Value: container.Name[1:],
+				},
+				{
+					Key:   "image",
+					Value: tag,
+				},
+				{
+					Key:   "created",
+					Value: strconv.FormatInt(container.Created.Unix(), 10),
+				},
+				{
+					Key:   "started_at",
+					Value: strconv.FormatInt(container.State.StartedAt.Unix(), 10),
+				},
 			},
 			Value: container.RestartCount,
-		})
+		}
+
+		var b strings.Builder
+
+		b.WriteString(metric.Name)
+		b.WriteString("{")
+
+		for index, value := range metric.Labels {
+
+			_, err = fmt.Fprintf(&b, `%s="%s"`, value.Key, value.Value)
+			if err != nil {
+				write.Logger.Error("Write the container restart count metric.", "err", err)
+			}
+
+			if index < len(metric.Labels)-1 {
+				b.WriteString(",")
+			}
+
+		}
+
+		b.WriteString("}")
+		b.WriteString(fmt.Sprintf(" %v\n", metric.Value))
+
+		_, err = fmt.Fprintf(w, b.String())
 		if err != nil {
 			write.Logger.Error("Write the container restart count metric.", "err", err)
 		}
