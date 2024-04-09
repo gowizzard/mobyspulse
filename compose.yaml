@@ -1,0 +1,15 @@
+# This file is used to build the docker image and run the container.
+services:
+    mobyspulse:
+        container_name: mobyspulse
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        ports:
+            - "3005:3000"
+        restart: unless-stopped
+        build:
+            context: .
+        develop:
+            watch:
+                - action: rebuild
+                  path: .
