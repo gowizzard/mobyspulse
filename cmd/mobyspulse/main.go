@@ -63,6 +63,8 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
+		request.Client.CloseIdleConnections()
+
 		err := server.Shutdown(ctx)
 		if err != nil {
 			write.Logger.Error("Shutdown the http server.", "err", err)
