@@ -43,6 +43,7 @@ func (c *config) send() (response *http.Response, err error) {
 			},
 		},
 	}
+	defer client.CloseIdleConnections()
 
 	request, err := http.NewRequestWithContext(c.Context, c.Method, result.String(), nil)
 	if err != nil {
