@@ -19,7 +19,6 @@ const (
 	scheme  = "http"
 	host    = "localhost"
 	timeout = 5 * time.Second
-	retries = 3
 )
 
 // config is to configure the request.
@@ -50,21 +49,9 @@ func (c *config) send() (response *http.Response, err error) {
 		return nil, err
 	}
 
-	for i := range retries {
-
-		response, err = client.Do(request)
-		if err != nil {
-			return nil, err
-		}
-
-		switch response.StatusCode {
-		case http.StatusTooManyRequests:
-			time.Sleep(time.Second * time.Duration(2^i))
-			continue
-		default:
-			return response, nil
-		}
-
+	response, err = client.Do(request)
+	if err != nil {
+		return nil, err
 	}
 
 	return response, nil
