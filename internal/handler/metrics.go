@@ -74,7 +74,7 @@ func Metrics(w http.ResponseWriter, _ *http.Request) {
 				},
 				{
 					Key:   "name",
-					Value: container.Name[1:],
+					Value: strings.Replace(container.Name, "/", "", 1),
 				},
 				{
 					Key:   "image",
