@@ -3,7 +3,7 @@
 package request_test
 
 import (
-	request "github.com/gowizzard/mobyspulse/internal/requests"
+	"github.com/gowizzard/mobyspulse/internal/request"
 	"reflect"
 	"testing"
 )

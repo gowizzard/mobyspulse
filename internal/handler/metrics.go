@@ -2,7 +2,7 @@ package handler
 
 import (
 	"fmt"
-	request "github.com/gowizzard/mobyspulse/internal/requests"
+	"github.com/gowizzard/mobyspulse/internal/request"
 	"github.com/gowizzard/mobyspulse/internal/write"
 	"net/http"
 	"strconv"

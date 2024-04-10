@@ -3,7 +3,7 @@ package main
 
 import (
 	"context"
-	request "github.com/gowizzard/mobyspulse/internal/requests"
+	"github.com/gowizzard/mobyspulse/internal/request"
 	"github.com/gowizzard/mobyspulse/internal/router"
 	"github.com/gowizzard/mobyspulse/internal/write"
 	"net/http"
