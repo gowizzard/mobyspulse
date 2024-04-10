@@ -40,9 +40,6 @@ func (c *config) send() (response *http.Response, err error) {
 	client := &http.Client{
 		Transport: &http.Transport{
 			DialContext: func(context context.Context, network, addr string) (netConn net.Conn, err error) {
-				if err != nil {
-					return nil, err
-				}
 				return net.DialTimeout("unix", socket, timeout)
 			},
 		},
