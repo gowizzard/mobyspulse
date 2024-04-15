@@ -81,6 +81,10 @@ func Metrics(w http.ResponseWriter, _ *http.Request) {
 					Value: tag,
 				},
 				{
+					Key:   "status",
+					Value: container.State.Status,
+				},
+				{
 					Key:   "created",
 					Value: strconv.FormatInt(container.Created.Unix(), 10),
 				},
