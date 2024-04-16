@@ -2,9 +2,7 @@
 package middleware
 
 import (
-	"github.com/gowizzard/mobyspulse/internal/write"
 	"net/http"
-	"os"
 	"reflect"
 )
 
@@ -15,24 +13,10 @@ type config struct {
 	Ok       bool
 }
 
-// environment is to define the configuration for the basic auth.
+// Config is to define the configuration for the basic auth.
 var (
-	environment config
+	Config config
 )
-
-// init is to initialize the basic auth configuration. If the environment variables BASIC_AUTH_USERNAME and
-// BASIC_AUTH_PASSWORD are set, then the basic auth is enabled. If the environment variables are not set, then the
-// basic auth is disabled.
-func init() {
-
-	environment.Username, environment.Ok = os.LookupEnv("BASIC_AUTH_USERNAME")
-	environment.Password, environment.Ok = os.LookupEnv("BASIC_AUTH_PASSWORD")
-
-	if environment.Ok {
-		write.Logger.Info("Basic auth is enabled.")
-	}
-
-}
 
 // Authentication is to authenticate the request with basic auth. If the environment variables BASIC_AUTH_USERNAME and
 // BASIC_AUTH_PASSWORD are set, then the request will be authenticated with basic auth. If the environment variables are
@@ -40,12 +24,12 @@ func init() {
 func Authentication(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		if environment.Ok {
+		if Config.Ok {
 
 			username, password, ok := r.BasicAuth()
 			if ok {
 
-				if reflect.DeepEqual(environment.Username, username) && reflect.DeepEqual(environment.Password, password) {
+				if reflect.DeepEqual(Config.Username, username) && reflect.DeepEqual(Config.Password, password) {
 					next.ServeHTTP(w, r)
 					return
 				}
