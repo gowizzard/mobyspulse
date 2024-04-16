@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"github.com/gowizzard/mobyspulse/internal/middleware"
 	"github.com/gowizzard/mobyspulse/internal/request"
 	"github.com/gowizzard/mobyspulse/internal/router"
 	"github.com/gowizzard/mobyspulse/internal/write"
@@ -19,6 +20,12 @@ import (
 func init() {
 
 	write.Logger.Info("Start the mobyspulse service.")
+
+	middleware.Config.Username, middleware.Config.Ok = os.LookupEnv("BASIC_AUTH_USERNAME")
+	middleware.Config.Password, middleware.Config.Ok = os.LookupEnv("BASIC_AUTH_PASSWORD")
+	if middleware.Config.Ok {
+		write.Logger.Info("Basic auth is enabled.")
+	}
 
 	status, err := request.Ping()
 	if err != nil {
