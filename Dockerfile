@@ -1,4 +1,4 @@
-# Dockerfile for the Shopware 6 Idealo Feed Backend application.
+# Dockerfile for the Moby's Pulse application.
 # This file details the process for constructing a lightweight and efficient Docker image using a multi-stage build process.
 # The chosen base is Alpine Linux for its minimalistic size, while still providing necessary functionalities.
 
@@ -15,9 +15,8 @@ RUN make build
 
 ########################################################################################################################
 
-# The final preparation phase for the production-ready image. Essential system packages are added,
-# a dedicated user for the application is created (enhancing security by avoiding root privileges),
-# and the correct timezone is set.
+# The final preparation phase for the production-ready image. The compiled binary is copied from the previous stage,
+# and the essential system packages are added and the correct timezone is set.
 FROM alpine:latest AS production
 ENV TZ=Europe/Berlin
 WORKDIR /app
