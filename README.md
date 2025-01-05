@@ -45,6 +45,7 @@ The exporter provides the following metrics:
 
 ```text
 # Moby's Pulse - Docker metrics exporter for Prometheus.
-# This is a custom exporter for Docker metrics. Your system running Docker version "26.0.1" and API version "1.45" is being monitored.
-container_restart_count{id="2c35a3500c6384cd88b1cb30182ba39e54c74e4047515d2e6db662aaa7116bb2",name="mobyspulse",image="mobyspulse-mobyspulse:latest",created="1713079803",started_at="1713079803"} 0
+# This is a custom exporter for Docker metrics. Your system running Docker version "27.4.0" and API version "1.47" is being monitored.
+container_restart_count{id="e76457b7744717e700db61fae0a0145290a35d1e9850ba135548c1f5ef8ed736",name="mobyspulse",image="mobyspulse-mobyspulse:latest",status="running",created="1735905255",started_at="1735905255"} 0
+container_state_health_status{id="e76457b7744717e700db61fae0a0145290a35d1e9850ba135548c1f5ef8ed736",name="mobyspulse",image="mobyspulse-mobyspulse:latest",status="running",created="1735905255",started_at="1735905255"} healthy
 ```
