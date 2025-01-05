@@ -21,8 +21,11 @@ type ContainerResponse struct {
 	Name         string    `json:"Name"`
 	RestartCount int       `json:"RestartCount"`
 	State        struct {
-		StartedAt time.Time `json:"StartedAt"`
 		Status    string    `json:"Status"`
+		StartedAt time.Time `json:"StartedAt"`
+		Health    struct {
+			Status string `json:"Status"`
+		}
 	} `json:"State"`
 }
 
