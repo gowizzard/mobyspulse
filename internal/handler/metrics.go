@@ -13,7 +13,7 @@ import (
 type Metric struct {
 	Name   string
 	Labels []Labels
-	Value  int
+	Value  interface{}
 }
 
 // Labels is to define the labels' struct. It has the key and value fields.
@@ -65,61 +65,75 @@ func Metrics(w http.ResponseWriter, _ *http.Request) {
 			tag = image.RepoTags[0]
 		}
 
-		metric := Metric{
-			Name: "container_restart_count",
-			Labels: []Labels{
-				{
-					Key:   "id",
-					Value: container.Id,
-				},
-				{
-					Key:   "name",
-					Value: strings.Replace(container.Name, "/", "", 1),
-				},
-				{
-					Key:   "image",
-					Value: tag,
-				},
-				{
-					Key:   "status",
-					Value: container.State.Status,
-				},
-				{
-					Key:   "created",
-					Value: strconv.FormatInt(container.Created.Unix(), 10),
-				},
-				{
-					Key:   "started_at",
-					Value: strconv.FormatInt(container.State.StartedAt.Unix(), 10),
-				},
+		labels := []Labels{
+			{
+				Key:   "id",
+				Value: container.Id,
 			},
-			Value: container.RestartCount,
+			{
+				Key:   "name",
+				Value: strings.Replace(container.Name, "/", "", 1),
+			},
+			{
+				Key:   "image",
+				Value: tag,
+			},
+			{
+				Key:   "status",
+				Value: container.State.Status,
+			},
+			{
+				Key:   "created",
+				Value: strconv.FormatInt(container.Created.Unix(), 10),
+			},
+			{
+				Key:   "started_at",
+				Value: strconv.FormatInt(container.State.StartedAt.Unix(), 10),
+			},
 		}
 
-		var b strings.Builder
+		metrics := []Metric{
+			{
+				Name:   "container_restart_count",
+				Labels: labels,
+				Value:  container.RestartCount,
+			},
+			{
+				Name:   "container_state_health_status",
+				Labels: labels,
+				Value:  container.State.Health.Status,
+			},
+		}
 
-		b.WriteString(metric.Name)
-		b.WriteString("{")
+		for _, value := range metrics {
 
-		for index, value := range metric.Labels {
+			var b strings.Builder
 
-			_, err = fmt.Fprintf(&b, `%s="%s"`, value.Key, value.Value)
+			b.WriteString(value.Name)
+			b.WriteString("{")
+
+			label := len(value.Labels) - 1
+			for index, value := range value.Labels {
+
+				_, err = fmt.Fprintf(&b, `%s="%s"`, value.Key, value.Value)
+				if err != nil {
+					write.Logger.Error("Write the container restart count metric.", "err", err)
+				}
+
+				if index < label {
+					b.WriteString(",")
+				}
+
+			}
+
+			b.WriteString("}")
+			b.WriteString(fmt.Sprintf(" %v\n", value.Value))
+
+			_, err = fmt.Fprintf(w, b.String())
 			if err != nil {
 				write.Logger.Error("Write the container restart count metric.", "err", err)
 			}
 
-			if index < len(metric.Labels)-1 {
-				b.WriteString(",")
-			}
-
-		}
-
-		b.WriteString("}")
-		b.WriteString(fmt.Sprintf(" %v\n", metric.Value))
-
-		_, err = fmt.Fprintf(w, b.String())
-		if err != nil {
-			write.Logger.Error("Write the container restart count metric.", "err", err)
 		}
 
 	}
