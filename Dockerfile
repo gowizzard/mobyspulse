@@ -6,7 +6,7 @@
 
 # This phase uses the Alpine-based Go image to compile the source code of the application.
 # By parameterizing the Go version, it becomes straightforward to maintain and modify in the future.
-ARG GO_VERSION=1.22
+ARG GO_VERSION=1.23
 FROM golang:${GO_VERSION}-alpine AS build
 RUN apk add --no-cache git make
 WORKDIR /tmp/src
