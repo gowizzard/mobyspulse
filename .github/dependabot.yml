@@ -1,14 +1,21 @@
-# Here the various external packages are
-# automatically updated daily with the dependabot.
+# The dependabot.yml file is used to configure the dependabot.
+# The dependabot is a bot that automatically updates the dependencies of the project.
 
 version: 2
 updates:
-    - package-ecosystem: gomod
-      directory: /
+    - package-ecosystem: "github-actions"
+      directory: "/"
       schedule:
-          interval: daily
-      open-pull-requests-limit: 10
-      assignees:
-          - gowizzard
+        interval: "daily"
+      reviewers:
+        - "jjideenschmiede/devops"
       commit-message:
-          prefix: ci(deps)
+        prefix: "ci"
+    - package-ecosystem: "gomod"
+      directory: "/"
+      schedule:
+        interval: "daily"
+      reviewers:
+        - "jjideenschmiede/backend"
+      commit-message:
+        prefix: "ci(deps)"
