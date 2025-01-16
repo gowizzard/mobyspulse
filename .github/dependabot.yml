@@ -8,7 +8,7 @@ updates:
       schedule:
         interval: "daily"
       reviewers:
-        - "jjideenschmiede/devops"
+        - "gowizzard"
       commit-message:
         prefix: "ci"
     - package-ecosystem: "gomod"
@@ -16,6 +16,6 @@ updates:
       schedule:
         interval: "daily"
       reviewers:
-        - "jjideenschmiede/backend"
+        - "gowizzard"
       commit-message:
         prefix: "ci(deps)"
